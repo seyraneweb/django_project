@@ -1,11 +1,338 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="az">
 <head>
-    <meta charset="UTF-8">
-    <title>Laboratoriya işi №4</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Login / Register — Nümunə</title>
+  <style>
+    /* ======= Reset & Base ======= */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html,body { height: 100%; font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background: linear-gradient(180deg,#f7fbff,#eef6ff); color:#111; }
+    a { color: inherit; text-decoration: none; }
+
+    /* ======= Layout ======= */
+    .wrap {
+      max-width: 1100px;
+      margin: 36px auto;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 24px;
+    }
+
+    /* ======= Card: Auth ======= */
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 8px 28px rgba(23,38,77,0.08);
+      padding: 28px;
+    }
+
+    .brand {
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-bottom:16px;
+    }
+    .logo {
+      width:46px; height:46px; border-radius:10px;
+      background: linear-gradient(135deg,#4f46e5,#06b6d4);
+      display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700;
+      box-shadow: 0 6px 18px rgba(99,102,241,0.18);
+    }
+
+    h1 { font-size:20px; margin-bottom:6px; }
+    p.lead { color:#445; font-size:14px; margin-bottom:18px; }
+
+    /* Toggle */
+    .auth-toggle { display:flex; gap:8px; margin-bottom:18px; }
+    .btn {
+      cursor:pointer;
+      padding:8px 14px;
+      border-radius:10px;
+      border:1px solid transparent;
+      background: #f1f5f9;
+      font-weight:600;
+      font-size:14px;
+    }
+    .btn.active {
+      background: linear-gradient(90deg,#6366f1,#06b6d4);
+      color:#fff;
+      box-shadow: 0 6px 18px rgba(99,102,241,0.12);
+      border-color: rgba(0,0,0,0.04);
+    }
+
+    form { margin-top:8px; }
+    .field { display:flex; flex-direction:column; gap:6px; margin-bottom:12px; }
+    label { font-size:13px; color:#334155; }
+    input[type="text"], input[type="email"], input[type="password"] {
+      padding:12px 14px; border-radius:10px; border:1px solid #e6eef8; background:#fbfdff;
+      outline: none; font-size:14px;
+    }
+    input:focus { border-color:#a5b4fc; box-shadow: 0 6px 18px rgba(99,102,241,0.06); }
+
+    .row { display:flex; gap:10px; }
+    .row .col { flex:1; }
+
+    .actions { display:flex; justify-content:space-between; align-items:center; margin-top:6px; }
+    .submit {
+      margin-top:10px;
+      display:inline-block;
+      width:100%;
+      padding:12px;
+      border-radius:10px;
+      background: linear-gradient(90deg,#06b6d4,#3b82f6);
+      color:#fff;
+      font-weight:700;
+      border:none;
+      cursor:pointer;
+      font-size:15px;
+    }
+
+    .muted { color:#6b7280; font-size:13px; }
+
+    /* password toggle small */
+    .pw-toggle { font-size:13px; color:#374151; cursor:pointer; background:none; border:none; padding:0; }
+
+    /* ======= Sidebar: Ad + Table ======= */
+    .sidebar {
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+    }
+
+    .ad {
+      background: linear-gradient(180deg,#fff,#fbfeff);
+      border-radius:12px;
+      padding:12px;
+      border:1px dashed rgba(96,165,250,0.18);
+      min-height:150px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+    }
+    .ad img { max-width:100%; border-radius:8px; }
+
+    .table-card {
+      background:#fff; border-radius:12px; padding:12px; box-shadow: 0 6px 18px rgba(16,24,40,0.04);
+    }
+    table { width:100%; border-collapse:collapse; font-size:14px; }
+    th,td { padding:10px 8px; text-align:left; border-bottom:1px solid #f1f5f9; }
+    th { font-size:13px; color:#334155; font-weight:700; background:transparent; }
+    tr:hover td { background: linear-gradient(90deg, rgba(99,102,241,0.03), rgba(6,182,212,0.02)); }
+
+    .badge { display:inline-block; padding:6px 8px; border-radius:999px; font-size:12px; font-weight:700; color:#064e3b; background:#dcfce7; }
+
+    /* ======= Footer small note ======= */
+    .note { margin-top:12px; font-size:13px; color:#475569; }
+
+    /* ======= Responsive ======= */
+    @media (max-width: 920px) {
+      .wrap { grid-template-columns: 1fr; padding:14px; gap:12px; }
+    }
+  </style>
 </head>
 <body>
-    <h1>Python Django freymvörkü ilə sadə səhifə</h1>
-    <p>Bu səhifə Django vasitəsilə göstərilir.</p>
+  <main class="wrap" aria-live="polite">
+    <!-- Left: Auth -->
+    <section class="card" aria-labelledby="auth-heading">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">FS</div>
+        <div>
+          <div style="font-weight:700">Fatime Site</div>
+          <div style="font-size:13px;color:#64748b">Sizin nümunə giriş / qeydiyyat səhifəniz</div>
+        </div>
+      </div>
+
+      <h1 id="auth-heading">Hesabınıza daxil olun və ya qeydiyyatdan keçin</h1>
+      <p class="lead">Email və şifrə ilə təhlükəsiz giriş. Yeni istifadəçisinizsə "Qeydiyyat" düyməsini sıxın.</p>
+
+      <div class="auth-toggle" role="tablist" aria-label="Auth switch">
+        <button class="btn active" id="tab-login" role="tab" aria-selected="true">Login</button>
+        <button class="btn" id="tab-register" role="tab" aria-selected="false">Register</button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="form-login" autocomplete="on" novalidate>
+        <div class="field">
+          <label for="login-email">Email</label>
+          <input id="login-email" name="email" type="email" placeholder="name@domain.com" required />
+        </div>
+        <div class="field">
+          <label for="login-pw">Şifrə</label>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <input id="login-pw" name="password" type="password" placeholder="Şifrənizi daxil edin" style="flex:1" required />
+            <button type="button" class="pw-toggle" aria-controls="login-pw" data-target="login-pw">Gör</button>
+          </div>
+        </div>
+
+        <div class="actions">
+          <label class="muted"><input type="checkbox" /> Yadda saxla</label>
+          <a href="#" class="muted">Şifrəni unutmusunuz?</a>
+        </div>
+
+        <button type="submit" class="submit">Daxil ol</button>
+
+        <p class="note">Sosial giriş əlavə etmək istəsəniz buraya ikonlar qoyun (Google, Facebook və s.).</p>
+      </form>
+
+      <!-- Register Form -->
+      <form id="form-register" style="display:none" autocomplete="on" novalidate>
+        <div class="row">
+          <div class="col field">
+            <label for="reg-first">Ad</label>
+            <input id="reg-first" name="first" type="text" placeholder="Adınız" required />
+          </div>
+          <div class="col field">
+            <label for="reg-last">Soyad</label>
+            <input id="reg-last" name="last" type="text" placeholder="Soyadınız" required />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="reg-email">Email</label>
+          <input id="reg-email" name="email" type="email" placeholder="name@domain.com" required />
+        </div>
+
+        <div class="field">
+          <label for="reg-pw">Şifrə</label>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <input id="reg-pw" name="password" type="password" placeholder="Ən azı 8 simvol" minlength="8" required style="flex:1" />
+            <button type="button" class="pw-toggle" aria-controls="reg-pw" data-target="reg-pw">Gör</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="reg-pw2">Şifrəni təsdiqlə</label>
+          <input id="reg-pw2" name="password2" type="password" placeholder="Şifrəni yenidən yazın" required />
+        </div>
+
+        <button type="submit" class="submit">Qeydiyyatdan keç</button>
+
+        <p class="note">Qeydiyyatla siz xidmət şərtlərini qəbul etmiş olursunuz.</p>
+      </form>
+
+    </section>
+
+    <!-- Right: Sidebar (Ad + Table) -->
+    <aside class="sidebar">
+      <div class="ad card" role="complementary" aria-label="Reklam bölməsi">
+        <!-- Placeholder reklam. Buraya siz real reklam HTML/JS yerləşdirə bilərsiniz (Google AdSense iframe və ya image link) -->
+        <div style="max-width:100%; text-align:center;">
+          <img src="https://via.placeholder.com/320x140?text=Reklam+Bloku" alt="Reklam nümunəsi" />
+          <div style="margin-top:8px; font-size:13px; color:#475569">Sponsorlu reklam</div>
+        </div>
+      </div>
+
+      <div class="table-card card" aria-label="İstifadəçi cədvəli">
+        <h3 style="font-size:15px;margin-bottom:10px">Son qeydə alınan istifadəçilər</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>İstifadəçi</th>
+              <th>Email</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Rəşad Məmmədov</td>
+              <td>rashad@example.com</td>
+              <td><span class="badge">Aktiv</span></td>
+            </tr>
+            <tr>
+              <td>Günel Əliyeva</td>
+              <td>gunel@example.com</td>
+              <td><span class="badge" style="background:#fff3cd;color:#664d03">Təsdiqlənmədi</span></td>
+            </tr>
+            <tr>
+              <td>Elvin Həsənov</td>
+              <td>elvin@example.com</td>
+              <td><span class="badge" style="background:#e6f8ff;color:#035388">Moderator</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p style="margin-top:8px;font-size:13px;color:#475569">Cədvəl nümunə məlumatlarıdır. Backend ilə dinamik etmək üçün bu cədvəli JSON-dan doldurun.</p>
+      </div>
+    </aside>
+  </main>
+
+  <script>
+    // Simple toggle logic
+    const tabLogin = document.getElementById('tab-login');
+    const tabRegister = document.getElementById('tab-register');
+    const formLogin = document.getElementById('form-login');
+    const formRegister = document.getElementById('form-register');
+
+    function showLogin() {
+      tabLogin.classList.add('active');
+      tabRegister.classList.remove('active');
+      tabLogin.setAttribute('aria-selected', 'true');
+      tabRegister.setAttribute('aria-selected', 'false');
+      formLogin.style.display = '';
+      formRegister.style.display = 'none';
+    }
+    function showRegister() {
+      tabRegister.classList.add('active');
+      tabLogin.classList.remove('active');
+      tabRegister.setAttribute('aria-selected', 'true');
+      tabLogin.setAttribute('aria-selected', 'false');
+      formRegister.style.display = '';
+      formLogin.style.display = 'none';
+    }
+
+    tabLogin.addEventListener('click', showLogin);
+    tabRegister.addEventListener('click', showRegister);
+
+    // Password visibility toggles
+    document.querySelectorAll('.pw-toggle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetId = btn.getAttribute('data-target');
+        const input = document.getElementById(targetId);
+        if (!input) return;
+        if (input.type === 'password') {
+          input.type = 'text';
+          btn.innerText = 'Gizlət';
+        } else {
+          input.type = 'password';
+          btn.innerText = 'Gör';
+        }
+      });
+    });
+
+    // Basic client-side validation and demo submit handlers
+    formLogin.addEventListener('submit', e => {
+      e.preventDefault();
+      const email = formLogin.querySelector('input[name="email"]').value.trim();
+      const pw = formLogin.querySelector('input[name="password"]').value;
+      if (!email || !pw) {
+        alert('Zəhmət olmasa email və şifrənizi daxil edin.');
+        return;
+      }
+      // Demo: burada AJAX/post ilə backend-ə göndərin
+      alert('Demo: login uğurlu (simulyasiya).');
+      formLogin.reset();
+    });
+
+    formRegister.addEventListener('submit', e => {
+      e.preventDefault();
+      const pw = formRegister.querySelector('input[name="password"]').value;
+      const pw2 = formRegister.querySelector('input[name="password2"]').value;
+      if (pw.length < 8) {
+        alert('Şifrə ən azı 8 simvol olmalıdır.');
+        return;
+      }
+      if (pw !== pw2) {
+        alert('Şifrələr uyğun gəlmir.');
+        return;
+      }
+      // Demo: burada AJAX/post ilə backend-ə göndərin
+      alert('Demo: qeydiyyat uğurlu (simulyasiya).');
+      formRegister.reset();
+      showLogin();
+    });
+  </script>
 </body>
 </html>
